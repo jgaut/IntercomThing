@@ -11,18 +11,12 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }
-}
-
-
-repositories {
-    maven {
-        url uri('mint-plugin-repo-5.2.1')
     }
 }
 
@@ -36,7 +30,8 @@ dependencies {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'
     }
-    compile 'com.splunk:mint-android-sdk:5.2.1'
+    //compile 'com.splunk:mint-android-sdk:5.2.1'
     testCompile 'junit:junit:4.12'
     provided 'com.google.android.things:androidthings:0.1-devpreview'
+    compile 'com.splunk:mint-android-sdk:5.2.1'
 }

@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
         Mint.enableDebugLog();
         // Set the application environment
         Mint.initAndStartSession(this.getApplication(), "60e4006b");
-        //Mint.initAndStartSessionHEC(this.getApplication(), "", "61870d1fc142824d1814056");
         Mint.startSession(this.getApplication());
 
         Mint.logEvent("Initialisation", MintLogLevel.Info);
