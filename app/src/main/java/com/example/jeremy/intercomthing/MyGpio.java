@@ -17,9 +17,9 @@ import java.util.TimerTask;
 
 public class MyGpio {
 
+    private static boolean delay = true;
     private String TAG = this.getClass().toString();
     private Gpio mGpio;
-    private static boolean delay=true;
     private Gpio gpio18;
     private Gpio gpio23;
 
@@ -84,7 +84,7 @@ public class MyGpio {
         //BCM23 -> OUT
         try {
             gpio23 = manager.openGpio("BCM23");
-            // Initialize the pin as an output
+            // Initialize the pin as an input
             gpio23.setDirection(Gpio.DIRECTION_IN);
             MyLog.i(TAG,"BCM23:"+gpio23.getValue());
         } catch (IOException e) {

@@ -2,22 +2,14 @@ package com.example.jeremy.intercomthing;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.google.android.things.pio.Gpio;
-import com.google.android.things.pio.GpioCallback;
-import com.google.android.things.pio.PeripheralManagerService;
-import com.splunk.mint.Mint;
-import com.splunk.mint.MintLogLevel;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+
 
 public class MainActivity extends AppCompatActivity {
 
+    private static FirebaseAnalytics mFirebaseAnalytics;
     private MyGpio myGpio;
     private String TAG = this.getClass().toString();
 
@@ -25,16 +17,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        MyLog.setmFirebaseAnalytics(mFirebaseAnalytics);
 
-        Mint.setApplicationEnvironment(Mint.appEnvironmentTesting);
-        Mint.setLogging(50);
-        Mint.setSessionInterval(1);
-        Mint.enableDebugLog();
-        // Set the application environment
-        Mint.initAndStartSession(this.getApplication(), "60e4006b");
-        Mint.startSession(this.getApplication());
-
-        Mint.logEvent("Initialisation", MintLogLevel.Info);
+        // Init GPIO
         myGpio = new MyGpio();
 
         new IftttHttpRequest().execute("init");
@@ -42,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
         //myGpio.openDoor();
         setContentView(R.layout.activity_main);
 
-        MyLog.transaction("init");
         MyLog.i(TAG, "init");
     }
 }
