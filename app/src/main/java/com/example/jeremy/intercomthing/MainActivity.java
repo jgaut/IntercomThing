@@ -1,10 +1,14 @@
 package com.example.jeremy.intercomthing;
 
+import android.content.res.AssetManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -16,6 +20,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Obtain all app properties
+        MyAppProperties.init(this.getApplicationContext());
 
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -30,5 +37,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         MyLog.i(TAG, "init");
+
+
     }
 }

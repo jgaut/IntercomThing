@@ -15,7 +15,6 @@ import java.util.Scanner;
 
 public class IftttHttpRequest extends AsyncTask<String, Void, String> {
 
-    private static String key = "cyvx1rRXFohARJaAe1TdW_";
     private String TAG = this.getClass().toString();
     protected String doInBackground(String... events){
 
@@ -24,7 +23,7 @@ public class IftttHttpRequest extends AsyncTask<String, Void, String> {
             String charset = java.nio.charset.StandardCharsets.UTF_8.name();  // Or in Java 7 and later, use the constant: java.nio.charset.StandardCharsets.UTF_8.name()
             URLConnection connection = null;
             try {
-                connection = new URL(url + key).openConnection();
+                connection = new URL(url + MyAppProperties.getProperty("iftttKey")).openConnection();
                 MyLog.i(TAG, connection.getURL().toString());
             } catch (IOException e) {
                 e.printStackTrace();
