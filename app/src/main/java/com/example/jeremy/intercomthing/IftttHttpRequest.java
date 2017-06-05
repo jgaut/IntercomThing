@@ -1,10 +1,10 @@
 package com.example.jeremy.intercomthing;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Scanner;
@@ -24,7 +24,7 @@ public class IftttHttpRequest extends AsyncTask<String, Void, String> {
             URLConnection connection = null;
             try {
                 connection = new URL(url + MyAppProperties.getProperty("iftttKey")).openConnection();
-                MyLog.i(TAG, connection.getURL().toString());
+                Log.i(TAG, connection.getURL().toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -33,7 +33,7 @@ public class IftttHttpRequest extends AsyncTask<String, Void, String> {
                 InputStream response = connection.getInputStream();
                 Scanner s = new Scanner(response).useDelimiter("\\A");
                 String result = s.hasNext() ? s.next() : "";
-                MyLog.i(TAG, result);
+                Log.i(TAG, result);
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -30,9 +30,8 @@ dependencies {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'
     }
-    //compile 'com.splunk:mint-android-sdk:5.2.1'
-    compile 'com.google.firebase:firebase-core:10.2.4'
-    compile 'com.google.firebase:firebase-crash:10.2.4'
+    compile 'com.splunk:mint-android-sdk:5.2.1'
     testCompile 'junit:junit:4.12'
     provided 'com.google.android.things:androidthings:0.1-devpreview'
+
 }

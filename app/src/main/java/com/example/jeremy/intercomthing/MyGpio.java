@@ -28,9 +28,9 @@ public class MyGpio {
         PeripheralManagerService manager = new PeripheralManagerService();
         List<String> portList = manager.getGpioList();
         if (portList.isEmpty()) {
-            MyLog.i(TAG, "No GPIO port available on this device.");
+            Log.i(TAG, "No GPIO port available on this device.");
         } else {
-            MyLog.i(TAG, "List of available ports: " + portList);
+            Log.i(TAG, "List of available ports: " + portList);
         }
 
         //Gestion du callback
@@ -39,17 +39,23 @@ public class MyGpio {
             public boolean onGpioEdge(Gpio gpio) {
                 // Read the active low pin state
                 try {
+                    //Log.i("GPIO", "BCM18="+gpio.getValue());
                     if (gpio.getValue() && delay) {
                         delay=false;
-                        MyLog.i(TAG, "Sécurité delay:"+delay);
-                        MyLog.i(TAG, gpio.toString() + new Boolean(gpio.getValue()).toString());
+                        MyLog.logEvent("BCM18=" + gpio.getValue());
+                        MyLog.logEvent("Security delay=" + delay);
+                        //MyLog.i(TAG, gpio.toString() + new Boolean(gpio.getValue()).toString());
+
                         new Timer().schedule(new TimerTask(){
                             public void run(){
                                 delay=true;
-                                MyLog.i(TAG, "Sécurité delay:"+delay);
+                                MyLog.logEvent("Security delay=" + delay);
                             }
                         },5000);
-                        new IftttHttpRequest().execute("ring");
+
+                        //new IftttHttpRequest().execute("ring");
+                        MyLog.logEvent("Ring");
+                        new MyEmail().execute("Ring", "Someone ring the bell !");
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -71,8 +77,8 @@ public class MyGpio {
             gpio18 = manager.openGpio("BCM18");
             // Initialize the pin as an input
             gpio18.setDirection(Gpio.DIRECTION_IN);
-            gpio18.setEdgeTriggerType(Gpio.EDGE_BOTH);
-            MyLog.i(TAG,"BCM18:"+gpio18.getValue());
+            gpio18.setEdgeTriggerType(Gpio.EDGE_RISING);
+            MyLog.logEvent("BCM18=" + gpio18.getValue());
             //Attache du callback
             gpio18.registerGpioCallback(mGpio18Callback);
         } catch (IOException e) {
@@ -86,22 +92,22 @@ public class MyGpio {
             gpio23 = manager.openGpio("BCM23");
             // Initialize the pin as an input
             gpio23.setDirection(Gpio.DIRECTION_IN);
-            MyLog.i(TAG,"BCM23:"+gpio23.getValue());
+            MyLog.logEvent("BCM23=" + gpio23.getValue());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void openDoor(){
-        MyLog.i(TAG, "Open Door");
+        MyLog.logEvent("Open Door");
         try {
             gpio23.setDirection(Gpio.DIRECTION_OUT_INITIALLY_HIGH);
-            MyLog.i(TAG,"BCM23:"+gpio23.getValue());
+            MyLog.logEvent("BCM23:" + gpio23.getValue());
             new Timer().schedule(new TimerTask(){
                 public void run(){
                     try {
                         gpio23.setDirection(Gpio.DIRECTION_IN);
-                        MyLog.i(TAG,"BCM23:"+gpio23.getValue());
+                        MyLog.logEvent("BCM23:" + gpio23.getValue());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

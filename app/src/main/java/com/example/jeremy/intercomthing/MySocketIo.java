@@ -1,8 +1,6 @@
 package com.example.jeremy.intercomthing;
 
-import android.content.Intent;
 import android.util.Log;
-import android.view.WindowManager;
 
 import java.net.URISyntaxException;
 
@@ -20,7 +18,7 @@ public class MySocketIo {
     private Socket soc;
 
     MySocketIo(){
-        MyLog.i(TAG,"Connexion au serveur...");
+        Log.i(TAG, "Connexion au serveur...");
         try{
             IO.Options opts = new IO.Options();
             opts.forceNew = true;
@@ -33,14 +31,14 @@ public class MySocketIo {
 
             @Override
             public void call(Object... args) {
-                MyLog.i(TAG, "connect");
+                Log.i(TAG, "connect");
             }
 
         }).on("test", new Emitter.Listener() {
 
             @Override
             public void call(Object... args) {
-                MyLog.i(TAG, "test");
+                Log.i(TAG, "test");
             }
 
         }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
