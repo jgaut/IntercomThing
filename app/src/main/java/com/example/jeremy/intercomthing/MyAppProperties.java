@@ -29,7 +29,7 @@ public class MyAppProperties {
     }
 
     public static String getProperty(String string) {
-        return properties.getProperty(string);
+        return properties.getProperty(string, "");
     }
 
 }

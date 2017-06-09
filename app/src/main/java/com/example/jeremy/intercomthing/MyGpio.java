@@ -77,7 +77,7 @@ public class MyGpio {
             gpio18 = manager.openGpio("BCM18");
             // Initialize the pin as an input
             gpio18.setDirection(Gpio.DIRECTION_IN);
-            gpio18.setEdgeTriggerType(Gpio.EDGE_RISING);
+            gpio18.setEdgeTriggerType(Gpio.EDGE_BOTH);
             MyLog.logEvent("BCM18=" + gpio18.getValue());
             //Attache du callback
             gpio18.registerGpioCallback(mGpio18Callback);
@@ -87,7 +87,7 @@ public class MyGpio {
 
 
         //Initialisation des GPIO pour l'ouverture de la porte
-        //BCM23 -> OUT
+        //BCM23 -> OUT to open the door
         try {
             gpio23 = manager.openGpio("BCM23");
             // Initialize the pin as an input

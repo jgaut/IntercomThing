@@ -24,10 +24,10 @@ public class MyEmail extends AsyncTask<String, String, Boolean> {
 
 
         Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", MyAppProperties.getProperty("MyEmail.mail.smtp.auth"));
+        props.put("mail.smtp.starttls.enable", MyAppProperties.getProperty("MyEmail.mail.smtp.starttls.enable"));
+        props.put("mail.smtp.host", MyAppProperties.getProperty("MyEmail.mail.smtp.host"));
+        props.put("mail.smtp.port", MyAppProperties.getProperty("MyEmail.mail.smtp.port"));
 
         Session session = Session.getInstance(props,
                 new javax.mail.Authenticator() {
@@ -72,9 +72,4 @@ public class MyEmail extends AsyncTask<String, String, Boolean> {
         this.sendEmail(strings[0], strings[1]);
         return new Boolean(true);
     }
-
-    protected void onPostExecute() {
-        MyLog.logEvent("Email sent");
-    }
-
 }
