@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
     private MyGpio myGpio;
     private String TAG = this.getClass().toString();
+    private MyWebSocketServer myWebSocketServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,23 +36,24 @@ public class MainActivity extends AppCompatActivity {
         // TODO: Update with your HEC token
         // Mint.initAndStartSessionHEC(this.getApplication(), "MINT_HEC_URL", "YOUR_HEC_TOKEN");
 
+        // Init GPIO
+        myGpio = new MyGpio(myWebSocketServer);
+
         //WebSocketServer
         WebSocketImpl.DEBUG = Boolean.getBoolean(MyAppProperties.getProperty("MyWebSocketServer.debug"));
         try {
             InetSocketAddress address = new InetSocketAddress(InetAddress.getByName(MyAppProperties.getProperty("MyWebSocketServer.hostname")),
                     Integer.parseInt(MyAppProperties.getProperty("MyWebSocketServer.port")));
-            MyWebSocketServer socketServer = new MyWebSocketServer(address);
-            socketServer.start();
+            //socketServer = new MyWebSocketServer(address);
+            myWebSocketServer = new MyWebSocketServer(Integer.parseInt(MyAppProperties.getProperty("MyWebSocketServer.port")), myGpio);
+            myWebSocketServer.start();
+
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
 
-        // Init GPIO
-        myGpio = new MyGpio();
-
         //new IftttHttpRequest().execute("init");
 
-        //myGpio.openDoor();
         setContentView(R.layout.activity_main);
 
         new Timer().schedule(new TimerTask() {

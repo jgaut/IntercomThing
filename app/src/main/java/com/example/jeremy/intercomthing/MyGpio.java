@@ -19,11 +19,11 @@ public class MyGpio {
 
     private static boolean delay = true;
     private String TAG = this.getClass().toString();
-    private Gpio mGpio;
     private Gpio gpio18;
     private Gpio gpio23;
+    private MyWebSocketServer myWebSocketServer;
 
-    MyGpio(){
+    MyGpio(final MyWebSocketServer myWebSocketServer) {
         //Listing des ports GPIO
         PeripheralManagerService manager = new PeripheralManagerService();
         List<String> portList = manager.getGpioList();
@@ -42,16 +42,20 @@ public class MyGpio {
                     //Log.i("GPIO", "BCM18="+gpio.getValue());
                     if (gpio.getValue() && delay) {
                         delay=false;
-                        MyLog.logEvent("BCM18=" + gpio.getValue());
-                        MyLog.logEvent("Security delay=" + delay);
+                        Log.i(TAG, "BCM18=" + gpio.getValue());
+                        Log.i(TAG, "Security delay=" + delay);
                         //MyLog.i(TAG, gpio.toString() + new Boolean(gpio.getValue()).toString());
 
                         new Timer().schedule(new TimerTask(){
                             public void run(){
                                 delay=true;
-                                MyLog.logEvent("Security delay=" + delay);
+                                Log.i(TAG, "Security delay=" + delay);
+
                             }
                         },5000);
+                        if (myWebSocketServer != null) {
+                            myWebSocketServer.sendToAll("ring");
+                        }
 
                         //new IftttHttpRequest().execute("ring");
                         MyLog.logEvent("Ring");
@@ -77,8 +81,9 @@ public class MyGpio {
             gpio18 = manager.openGpio("BCM18");
             // Initialize the pin as an input
             gpio18.setDirection(Gpio.DIRECTION_IN);
-            gpio18.setEdgeTriggerType(Gpio.EDGE_BOTH);
-            MyLog.logEvent("BCM18=" + gpio18.getValue());
+            gpio18.setActiveType(Gpio.ACTIVE_HIGH);
+            gpio18.setEdgeTriggerType(Gpio.EDGE_RISING);
+            Log.i(TAG, "BCM18=" + gpio18.getValue());
             //Attache du callback
             gpio18.registerGpioCallback(mGpio18Callback);
         } catch (IOException e) {
@@ -92,22 +97,24 @@ public class MyGpio {
             gpio23 = manager.openGpio("BCM23");
             // Initialize the pin as an input
             gpio23.setDirection(Gpio.DIRECTION_IN);
-            MyLog.logEvent("BCM23=" + gpio23.getValue());
+            Log.i(TAG, "BCM23=" + gpio23.getValue());
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        this.myWebSocketServer = myWebSocketServer;
     }
 
     public void openDoor(){
         MyLog.logEvent("Open Door");
         try {
             gpio23.setDirection(Gpio.DIRECTION_OUT_INITIALLY_HIGH);
-            MyLog.logEvent("BCM23:" + gpio23.getValue());
+            Log.i(TAG, "BCM23:" + gpio23.getValue());
             new Timer().schedule(new TimerTask(){
                 public void run(){
                     try {
                         gpio23.setDirection(Gpio.DIRECTION_IN);
-                        MyLog.logEvent("BCM23:" + gpio23.getValue());
+                        Log.i(TAG, "BCM23:" + gpio23.getValue());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
