@@ -13,13 +13,14 @@ import java.util.TimerTask;
 
 /**
  * Created by jeremy on 18/01/2017.
+ * https://developer.android.com/things/hardware/raspberrypi-io.html
  */
 
 public class MyGpio {
 
     private static boolean delay = true;
     private String TAG = this.getClass().toString();
-    private Gpio gpio18;
+    private Gpio gpio24;
     private Gpio gpio23;
     private MyWebSocketServer myWebSocketServer;
 
@@ -34,15 +35,15 @@ public class MyGpio {
         }
 
         //Gestion du callback
-        GpioCallback mGpio18Callback = new GpioCallback() {
+        GpioCallback mGpio24Callback = new GpioCallback() {
             @Override
             public boolean onGpioEdge(Gpio gpio) {
                 // Read the active low pin state
                 try {
-                    //Log.i("GPIO", "BCM18="+gpio.getValue());
+                    //Log.i("GPIO", "BCM24="+gpio.getValue());
                     if (gpio.getValue() && delay) {
                         delay=false;
-                        Log.i(TAG, "BCM18=" + gpio.getValue());
+                        Log.i(TAG, "BCM24=" + gpio.getValue());
                         Log.i(TAG, "Security delay=" + delay);
                         //MyLog.i(TAG, gpio.toString() + new Boolean(gpio.getValue()).toString());
 
@@ -78,14 +79,14 @@ public class MyGpio {
         //Initialisation des GPIO pour la détection de la sonnerie
         //BCM18 -> IN
         try {
-            gpio18 = manager.openGpio("BCM18");
+            gpio24 = manager.openGpio("BCM24");
             // Initialize the pin as an input
-            gpio18.setDirection(Gpio.DIRECTION_IN);
-            gpio18.setActiveType(Gpio.ACTIVE_HIGH);
-            gpio18.setEdgeTriggerType(Gpio.EDGE_RISING);
-            Log.i(TAG, "BCM18=" + gpio18.getValue());
+            gpio24.setDirection(Gpio.DIRECTION_IN);
+            gpio24.setActiveType(Gpio.ACTIVE_HIGH);
+            gpio24.setEdgeTriggerType(Gpio.EDGE_RISING);
+            Log.i(TAG, "BCM24=" + gpio24.getValue());
             //Attache du callback
-            gpio18.registerGpioCallback(mGpio18Callback);
+            gpio24.registerGpioCallback(mGpio24Callback);
         } catch (IOException e) {
             e.printStackTrace();
         }
