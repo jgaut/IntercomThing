@@ -15,9 +15,9 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static MyWebSocketServer myWebSocketServer;
     private MyGpio myGpio;
     private String TAG = this.getClass().toString();
-    private MyWebSocketServer myWebSocketServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         // Mint.initAndStartSessionHEC(this.getApplication(), "MINT_HEC_URL", "YOUR_HEC_TOKEN");
 
         // Init GPIO
-        myGpio = new MyGpio(myWebSocketServer);
+        myGpio = new MyGpio();
 
         //WebSocketServer
         WebSocketImpl.DEBUG = Boolean.getBoolean(MyAppProperties.getProperty("MyWebSocketServer.debug"));
@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-
-        //new IftttHttpRequest().execute("init");
 
         setContentView(R.layout.activity_main);
 

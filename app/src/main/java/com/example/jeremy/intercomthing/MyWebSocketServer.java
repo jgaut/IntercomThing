@@ -58,6 +58,8 @@ public class MyWebSocketServer extends WebSocketServer {
                 myGpio.openDoor();
             } else if (message.equals("echo")) {
                 this.sendToAll("echo");
+            } else if (message.equals("ring")) {
+                myGpio.getmGpio24Callback().onGpioEdge(myGpio.getGpio18());
             }
         } else {
 

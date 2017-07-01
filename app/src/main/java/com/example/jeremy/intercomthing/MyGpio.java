@@ -22,9 +22,10 @@ public class MyGpio {
     private String TAG = this.getClass().toString();
     private Gpio gpio24;
     private Gpio gpio23;
-    private MyWebSocketServer myWebSocketServer;
+    private Gpio gpio18;
+    private GpioCallback mGpio24Callback;
 
-    MyGpio(final MyWebSocketServer myWebSocketServer) {
+    MyGpio() {
         //Listing des ports GPIO
         PeripheralManagerService manager = new PeripheralManagerService();
         List<String> portList = manager.getGpioList();
@@ -35,7 +36,7 @@ public class MyGpio {
         }
 
         //Gestion du callback
-        GpioCallback mGpio24Callback = new GpioCallback() {
+        mGpio24Callback = new GpioCallback() {
             @Override
             public boolean onGpioEdge(Gpio gpio) {
                 // Read the active low pin state
@@ -51,21 +52,20 @@ public class MyGpio {
                             public void run(){
                                 delay=true;
                                 Log.i(TAG, "Security delay=" + delay);
-
+                                initGpio24();
                             }
                         },5000);
-                        if (myWebSocketServer != null) {
-                            myWebSocketServer.sendToAll("ring");
-                        }
 
                         //new IftttHttpRequest().execute("ring");
                         MyLog.logEvent("Ring");
                         new MyEmail().execute("Ring", "Someone ring the bell !");
+                        if (MainActivity.myWebSocketServer != null) {
+                            MainActivity.myWebSocketServer.sendToAll("Ring");
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
                 // Continue listening for more interrupts
                 return true;
             }
@@ -77,16 +77,19 @@ public class MyGpio {
         };
 
         //Initialisation des GPIO pour la détection de la sonnerie
-        //BCM18 -> IN
+        //BCM24 -> IN
         try {
             gpio24 = manager.openGpio("BCM24");
             // Initialize the pin as an input
-            gpio24.setDirection(Gpio.DIRECTION_IN);
-            gpio24.setActiveType(Gpio.ACTIVE_HIGH);
-            gpio24.setEdgeTriggerType(Gpio.EDGE_RISING);
-            Log.i(TAG, "BCM24=" + gpio24.getValue());
-            //Attache du callback
-            gpio24.registerGpioCallback(mGpio24Callback);
+            this.initGpio24();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Initialisation des GPIO pour la détection de la sonnerie -> Simulation
+        //BCM18 -> IN
+        try {
+            gpio18 = manager.openGpio("BCM18");
+            gpio18.setDirection(Gpio.DIRECTION_OUT_INITIALLY_HIGH);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -102,12 +105,34 @@ public class MyGpio {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        this.myWebSocketServer = myWebSocketServer;
     }
 
+    public Gpio getGpio18() {
+        return gpio18;
+    }
+
+    public GpioCallback getmGpio24Callback() {
+        return mGpio24Callback;
+    }
+
+    private void initGpio24() {
+        try {
+            gpio24.setDirection(Gpio.DIRECTION_IN);
+            gpio24.setActiveType(Gpio.ACTIVE_HIGH);
+            gpio24.setEdgeTriggerType(Gpio.EDGE_RISING);
+            //Attache du callback
+            gpio24.registerGpioCallback(mGpio24Callback);
+            Log.i(TAG, "BCM24=" + gpio24.getValue());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
     public void openDoor(){
         MyLog.logEvent("Open Door");
+        if (MainActivity.myWebSocketServer != null) {
+            MainActivity.myWebSocketServer.sendToAll("Open Door");
+        }
         try {
             gpio23.setDirection(Gpio.DIRECTION_OUT_INITIALLY_HIGH);
             Log.i(TAG, "BCM23:" + gpio23.getValue());
@@ -125,4 +150,5 @@ public class MyGpio {
             e.printStackTrace();
         }
     }
+
 }
