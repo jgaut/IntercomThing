@@ -115,6 +115,7 @@ public class MyGpio {
         return mGpio24Callback;
     }
 
+
     private void initGpio24() {
         try {
             gpio24.setDirection(Gpio.DIRECTION_IN);

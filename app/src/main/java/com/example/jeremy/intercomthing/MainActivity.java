@@ -2,8 +2,12 @@ package com.example.jeremy.intercomthing;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
+import com.splunk.mint.DataSaverResponse;
 import com.splunk.mint.Mint;
+import com.splunk.mint.MintCallback;
+import com.splunk.mint.NetSenderResponse;
 
 import org.java_websocket.WebSocketImpl;
 
@@ -29,12 +33,30 @@ public class MainActivity extends AppCompatActivity {
         // Set the application environment
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
         Mint.enableDebugLog();
+        Mint.setUserOptOut(false);
+        Mint.setMintCallback(new MintCallback() {
+            @Override
+            public void netSenderResponse(NetSenderResponse netSenderResponse) {
+                Log.i(TAG, netSenderResponse.toString());
+            }
+
+            @Override
+            public void dataSaverResponse(DataSaverResponse dataSaverResponse) {
+                Log.i(TAG, dataSaverResponse.getData());
+                Log.i(TAG, dataSaverResponse.toString());
+            }
+
+            @Override
+            public void lastBreath(Exception e) {
+                Log.i(TAG, e.getMessage());
+            }
+        });
 
         // TODO: Update with your API key
-        Mint.initAndStartSession(this.getApplication(), MyAppProperties.getProperty("Splunk.api.key"));
+        //Mint.initAndStartSession(this.getApplication(), MyAppProperties.getProperty("Splunk.api.key"));
 
         // TODO: Update with your HEC token
-        // Mint.initAndStartSessionHEC(this.getApplication(), "MINT_HEC_URL", "YOUR_HEC_TOKEN");
+        Mint.initAndStartSessionHEC(this.getApplication(), "", "");
 
         // Init GPIO
         myGpio = new MyGpio();
@@ -60,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 10000);
 
-        new MyEmail().execute("Initialisation", "Initialisation completed");
+        //new MyEmail().execute("Initialisation", "Initialisation completed");
 
 
 

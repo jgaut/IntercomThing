@@ -12,6 +12,7 @@ public class MyLog {
 
     public static void logEvent(String s) {
         Mint.logEvent(s);
+        Mint.flush();
         Log.i("Splunk", s);
     }
 

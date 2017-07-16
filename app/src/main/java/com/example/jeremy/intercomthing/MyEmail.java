@@ -59,6 +59,7 @@ public class MyEmail extends AsyncTask<String, String, Boolean> {
 
             Transport.send(message);
 
+
             MyLog.logEvent("Email sent");
 
         } catch (MessagingException e) {

@@ -6,6 +6,7 @@ buildscript {
             url uri('mint-plugin-repo-5.2.1')
         }
         jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -27,6 +28,7 @@ allprojects {
             url uri('mint-plugin-repo-5.2.1')
         }
         jcenter()
+        mavenCentral()
     }
 }
 
