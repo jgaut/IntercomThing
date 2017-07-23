@@ -11,12 +11,17 @@ import com.splunk.mint.Mint;
 public class MyLog {
 
     public static void logEvent(String s) {
+
         Mint.logEvent(s);
         Mint.flush();
         Log.i("Splunk", s);
+
     }
 
     public static void logException(String s1, Exception e1) {
+
         Log.i(s1, e1.toString());
+        Mint.logException(e1);
+        Mint.flush();
     }
 }

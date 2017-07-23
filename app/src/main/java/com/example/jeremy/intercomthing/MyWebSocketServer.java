@@ -1,7 +1,5 @@
 package com.example.jeremy.intercomthing;
 
-import android.util.Log;
-
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -75,7 +73,6 @@ public class MyWebSocketServer extends WebSocketServer {
     @Override
     public void onStart() {
         MyLog.logEvent("WebSocketServer started=" + this.getAddress().toString());
-        Log.i("socket", this.getDraft().toString());
     }
 
     public void sendToAll(String text) {

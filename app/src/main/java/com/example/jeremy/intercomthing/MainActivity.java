@@ -56,7 +56,10 @@ public class MainActivity extends AppCompatActivity {
         //Mint.initAndStartSession(this.getApplication(), MyAppProperties.getProperty("Splunk.api.key"));
 
         // TODO: Update with your HEC token
-        Mint.initAndStartSessionHEC(this.getApplication(), "", "");
+        Mint.initAndStartSessionHEC(this.getApplication(), MyAppProperties.getProperty("Splunk.hec.url"), MyAppProperties.getProperty("Splunk.hec.token"));
+
+        //Set some form of userIdentifier for this session
+        Mint.setUserIdentifier("jgautier");
 
         // Init GPIO
         myGpio = new MyGpio();
