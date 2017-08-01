@@ -11,6 +11,8 @@ import com.splunk.mint.NetSenderResponse;
 
 import org.java_websocket.WebSocketImpl;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -38,12 +40,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void netSenderResponse(NetSenderResponse netSenderResponse) {
                 Log.i(TAG, netSenderResponse.toString());
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                netSenderResponse.getException().printStackTrace(pw);
+                Log.i(TAG, sw.toString());
             }
 
             @Override
             public void dataSaverResponse(DataSaverResponse dataSaverResponse) {
                 Log.i(TAG, dataSaverResponse.getData());
                 Log.i(TAG, dataSaverResponse.toString());
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                dataSaverResponse.getException().printStackTrace(pw);
+                Log.i(TAG, sw.toString());
             }
 
             @Override
