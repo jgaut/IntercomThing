@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
         new Timer().schedule(new TimerTask() {
             public void run() {
                 MyLog.logEvent("Initialisation");
+                speak("Initialisation completed");
             }
         }, 10000);
 
