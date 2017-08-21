@@ -2,17 +2,11 @@ package com.example.jeremy.intercomthing;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
-import com.splunk.mint.DataSaverResponse;
 import com.splunk.mint.Mint;
-import com.splunk.mint.MintCallback;
-import com.splunk.mint.NetSenderResponse;
 
 import org.java_websocket.WebSocketImpl;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -32,43 +26,13 @@ public class MainActivity extends AppCompatActivity {
         // Obtain all app properties
         MyAppProperties.init(this.getApplicationContext());
 
-        // Set the application environment
+        //Mint
+            // Set the application environment
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
         Mint.enableDebugLog();
         Mint.setUserOptOut(false);
-        Mint.setMintCallback(new MintCallback() {
-            @Override
-            public void netSenderResponse(NetSenderResponse netSenderResponse) {
-                Log.i(TAG, netSenderResponse.toString());
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                netSenderResponse.getException().printStackTrace(pw);
-                Log.i(TAG, sw.toString());
-            }
-
-            @Override
-            public void dataSaverResponse(DataSaverResponse dataSaverResponse) {
-                Log.i(TAG, dataSaverResponse.getData());
-                Log.i(TAG, dataSaverResponse.toString());
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                dataSaverResponse.getException().printStackTrace(pw);
-                Log.i(TAG, sw.toString());
-            }
-
-            @Override
-            public void lastBreath(Exception e) {
-                Log.i(TAG, e.getMessage());
-            }
-        });
-
-        // TODO: Update with your API key
-        //Mint.initAndStartSession(this.getApplication(), MyAppProperties.getProperty("Splunk.api.key"));
-
-        // TODO: Update with your HEC token
         Mint.initAndStartSessionHEC(this.getApplication(), MyAppProperties.getProperty("Splunk.hec.url"), MyAppProperties.getProperty("Splunk.hec.token"));
-
-        //Set some form of userIdentifier for this session
+            //Set some form of userIdentifier for this session
         Mint.setUserIdentifier("jgautier");
 
         // Init GPIO
@@ -94,10 +58,6 @@ public class MainActivity extends AppCompatActivity {
                 MyLog.logEvent("Initialisation");
             }
         }, 10000);
-
-        //new MyEmail().execute("Initialisation", "Initialisation completed");
-
-
 
     }
 }
