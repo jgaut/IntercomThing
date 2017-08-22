@@ -88,12 +88,9 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        registerReceiver(mAdapterStateChangeReceiver, new IntentFilter(
-                BluetoothAdapter.ACTION_STATE_CHANGED));
-        registerReceiver(mSinkProfileStateChangeReceiver, new IntentFilter(
-                A2dpSinkHelper.ACTION_CONNECTION_STATE_CHANGED));
-        registerReceiver(mSinkProfilePlaybackChangeReceiver, new IntentFilter(
-                A2dpSinkHelper.ACTION_PLAYING_STATE_CHANGED));
+        this.registerReceiver(mAdapterStateChangeReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+        this.registerReceiver(mSinkProfileStateChangeReceiver, new IntentFilter(A2dpSinkHelper.ACTION_CONNECTION_STATE_CHANGED));
+        this.registerReceiver(mSinkProfilePlaybackChangeReceiver, new IntentFilter(A2dpSinkHelper.ACTION_PLAYING_STATE_CHANGED));
 
         if (mBluetoothAdapter.isEnabled()) {
             Log.d(TAG, "Bluetooth Adapter is already enabled.");
@@ -103,8 +100,10 @@ public class MainActivity extends AppCompatActivity {
             mBluetoothAdapter.enable();
         }
 
+        //UI
         setContentView(R.layout.activity_main);
 
+        //Initialisation completed
         new Timer().schedule(new TimerTask() {
             public void run() {
                 MyLog.logEvent("Initialisation completed");
@@ -123,9 +122,9 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             int oldState = A2dpSinkHelper.getPreviousAdapterState(intent);
             int newState = A2dpSinkHelper.getCurrentAdapterState(intent);
-            Log.d(TAG, "Bluetooth Adapter changing state from " + oldState + " to " + newState);
+            Log.d(TAG+" mAdapterState", "Bluetooth Adapter changing state from " + oldState + " to " + newState);
             if (newState == BluetoothAdapter.STATE_ON) {
-                Log.i(TAG, "Bluetooth Adapter is ready");
+                Log.i(TAG+" mAdapterState", "Bluetooth Adapter is ready");
                 initA2DPSink();
             }
         }
@@ -144,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 int oldState = A2dpSinkHelper.getPreviousProfileState(intent);
                 int newState = A2dpSinkHelper.getCurrentProfileState(intent);
                 BluetoothDevice device = A2dpSinkHelper.getDevice(intent);
-                Log.d(TAG, "Bluetooth A2DP sink changing connection state from " + oldState +
+                Log.d(TAG+" mSinkProfileState", "Bluetooth A2DP sink changing connection state from " + oldState +
                         " to " + newState + " device " + device);
                 if (device != null) {
                     String deviceName = Objects.toString(device.getName(), "a device");
@@ -171,13 +170,13 @@ public class MainActivity extends AppCompatActivity {
                 int oldState = A2dpSinkHelper.getPreviousProfileState(intent);
                 int newState = A2dpSinkHelper.getCurrentProfileState(intent);
                 BluetoothDevice device = A2dpSinkHelper.getDevice(intent);
-                Log.d(TAG, "Bluetooth A2DP sink changing playback state from " + oldState +
+                Log.d(TAG+" mSinkProfilePlayback", "Bluetooth A2DP sink changing playback state from " + oldState +
                         " to " + newState + " device " + device);
                 if (device != null) {
                     if (newState == A2dpSinkHelper.STATE_PLAYING) {
-                        Log.i(TAG, "Playing audio from device " + device.getAddress());
+                        Log.i(TAG+" mSinkProfilePlayback", "Playing audio from device " + device.getAddress());
                     } else if (newState == A2dpSinkHelper.STATE_NOT_PLAYING) {
-                        Log.i(TAG, "Stopped playing audio from " + device.getAddress());
+                        Log.i(TAG+" mSinkProfilePlayback", "Stopped playing audio from " + device.getAddress());
                     }
                 }
             }
