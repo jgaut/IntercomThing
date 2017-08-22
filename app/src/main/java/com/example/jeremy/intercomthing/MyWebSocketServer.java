@@ -19,10 +19,12 @@ https://github.com/TooTallNate/Java-WebSocket/blob/master/src/main/example/ChatS
 public class MyWebSocketServer extends WebSocketServer {
 
     private MyGpio myGpio;
+    private MyTts myTts;
 
-    public MyWebSocketServer(int port, MyGpio myGpio) throws UnknownHostException {
+    public MyWebSocketServer(int port, MyGpio myGpio, MyTts myTts) throws UnknownHostException {
         super(new InetSocketAddress(port));
         this.myGpio = myGpio;
+        this.myTts = myTts;
     }
 
     public MyWebSocketServer(int port) throws UnknownHostException {
@@ -50,13 +52,12 @@ public class MyWebSocketServer extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        MyLog.logEvent("WebSocketServer message=" + message);
+        MyLog.logEvent("WebSocketServer received message=" + message);
         if (message != null) {
             if (message.equals("open door")) {
                 myGpio.openDoor();
             } else if (message.equals("echo")) {
                 this.sendToAll("echo");
-                MyLog.logEvent("echo");
             } else if (message.equals("ring")) {
                 myGpio.getmGpio24Callback().onGpioEdge(myGpio.getGpio18());
             }
@@ -80,7 +81,7 @@ public class MyWebSocketServer extends WebSocketServer {
         synchronized (con) {
             for (WebSocket c : con) {
                 c.send(text);
-                MyLog.logEvent("echo sent to " + c.getRemoteSocketAddress());
+                MyLog.logEvent("WebSocketServer sent message=echo to " + c.getRemoteSocketAddress());
             }
         }
     }

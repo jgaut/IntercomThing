@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private String TAG = this.getClass().toString();
 
     private static final String ADAPTER_FRIENDLY_NAME = "My Android Things device";
-    private static final int DISCOVERABLE_TIMEOUT_MS = 300;
+    private static final int DISCOVERABLE_TIMEOUT_MS = 3000;
     private static final int REQUEST_CODE_ENABLE_DISCOVERABLE = 100;
 
     private static final String UTTERANCE_ID = "com.example.androidthings.bluetooth.audio.UTTERANCE_ID";
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothProfile mA2DPSinkProxy;
 
-    private TextToSpeech mTtsEngine;
+    private MyTts myTts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +62,11 @@ public class MainActivity extends AppCompatActivity {
             //Set some form of userIdentifier for this session
         Mint.setUserIdentifier("jgautier");
 
-        // Init GPIO
-        myGpio = new MyGpio();
+        // Text-to-Speech
+        myTts = new MyTts(this);
+
+        // GPIO
+        myGpio = new MyGpio(myTts);
 
         //WebSocketServer
         WebSocketImpl.DEBUG = Boolean.getBoolean(MyAppProperties.getProperty("MyWebSocketServer.debug"));
@@ -71,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             InetSocketAddress address = new InetSocketAddress(InetAddress.getByName(MyAppProperties.getProperty("MyWebSocketServer.hostname")),
                     Integer.parseInt(MyAppProperties.getProperty("MyWebSocketServer.port")));
             //socketServer = new MyWebSocketServer(address);
-            myWebSocketServer = new MyWebSocketServer(Integer.parseInt(MyAppProperties.getProperty("MyWebSocketServer.port")), myGpio);
+            myWebSocketServer = new MyWebSocketServer(Integer.parseInt(MyAppProperties.getProperty("MyWebSocketServer.port")), myGpio, myTts);
             myWebSocketServer.start();
 
         } catch (UnknownHostException e) {
@@ -84,9 +87,6 @@ public class MainActivity extends AppCompatActivity {
             Log.w(TAG, "No default Bluetooth adapter. Device likely does not support bluetooth.");
             return;
         }
-
-        // We use Text-to-Speech to indicate status change to the user
-        initTts();
 
         registerReceiver(mAdapterStateChangeReceiver, new IntentFilter(
                 BluetoothAdapter.ACTION_STATE_CHANGED));
@@ -107,11 +107,10 @@ public class MainActivity extends AppCompatActivity {
 
         new Timer().schedule(new TimerTask() {
             public void run() {
-                MyLog.logEvent("Initialisation");
-                speak("Initialisation completed");
+                MyLog.logEvent("Initialisation completed");
+                myTts.speak("Initialisation completed");
             }
         }, 10000);
-
     }
 
     /**
@@ -150,9 +149,9 @@ public class MainActivity extends AppCompatActivity {
                 if (device != null) {
                     String deviceName = Objects.toString(device.getName(), "a device");
                     if (newState == BluetoothProfile.STATE_CONNECTED) {
-                        speak("Connected to " + deviceName);
+                        myTts.speak("Connected to " + deviceName);
                     } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                        speak("Disconnected from " + deviceName);
+                        myTts.speak("Disconnected from " + deviceName);
                     }
                 }
             }
@@ -222,35 +221,13 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(discoverableIntent, REQUEST_CODE_ENABLE_DISCOVERABLE);
     }
 
-    private void initTts() {
-        mTtsEngine = new TextToSpeech(MainActivity.this,
-                new TextToSpeech.OnInitListener() {
-                    @Override
-                    public void onInit(int status) {
-                        if (status == TextToSpeech.SUCCESS) {
-                            mTtsEngine.setLanguage(Locale.US);
-                        } else {
-                            Log.w(TAG, "Could not open TTS Engine (onInit status=" + status
-                                    + "). Ignoring text to speech");
-                            mTtsEngine = null;
-                        }
-                    }
-                });
-    }
 
-
-    private void speak(String utterance) {
-        Log.i(TAG, utterance);
-        if (mTtsEngine != null) {
-            mTtsEngine.speak(utterance, TextToSpeech.QUEUE_ADD, null, UTTERANCE_ID);
-        }
-    }
 
     private void disconnectConnectedDevices() {
         if (mA2DPSinkProxy == null || mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
             return;
         }
-        speak("Disconnecting devices");
+        myTts.speak("Disconnecting devices");
         for (BluetoothDevice device: mA2DPSinkProxy.getConnectedDevices()) {
             Log.i(TAG, "Disconnecting device " + device);
             A2dpSinkHelper.disconnect(mA2DPSinkProxy, device);
@@ -284,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
             // generate corresponding broadcast intents or profile proxy events that you can
             // listen to and react appropriately.
 
-            speak("Bluetooth audio sink is discoverable for " + DISCOVERABLE_TIMEOUT_MS +
+            myTts.speak("Bluetooth audio sink is discoverable for " + DISCOVERABLE_TIMEOUT_MS +
                     " milliseconds. Look for a device named " + ADAPTER_FRIENDLY_NAME);
 
         }

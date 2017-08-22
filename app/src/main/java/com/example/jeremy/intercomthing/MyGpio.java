@@ -24,8 +24,10 @@ public class MyGpio {
     private Gpio gpio23;
     private Gpio gpio18;
     private GpioCallback mGpio24Callback;
+    private MyTts myTts;
 
-    MyGpio() {
+    MyGpio(MyTts myTts) {
+
         //Listing des ports GPIO
         PeripheralManagerService manager = new PeripheralManagerService();
         List<String> portList = manager.getGpioList();
@@ -106,6 +108,8 @@ public class MyGpio {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        this.myTts=myTts;
     }
 
     public Gpio getGpio18() {
