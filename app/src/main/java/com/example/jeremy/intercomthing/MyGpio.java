@@ -58,7 +58,6 @@ public class MyGpio {
 
                         //new IftttHttpRequest().execute("ring");
                         MyLog.logEvent("Ring");
-                        new MyEmail().execute("Ring", "Someone ring the bell !");
                         if (MainActivity.myWebSocketServer != null) {
                             MainActivity.myWebSocketServer.sendToAll("Ring");
                         }
@@ -80,16 +79,18 @@ public class MyGpio {
         //BCM24 -> IN
         try {
             gpio24 = manager.openGpio("BCM24");
+
             // Initialize the pin as an input
             this.initGpio24();
         } catch (IOException e) {
             e.printStackTrace();
         }
         //Initialisation des GPIO pour la détection de la sonnerie -> Simulation
-        //BCM18 -> IN
+        //BCM18 -> OUT
         try {
             gpio18 = manager.openGpio("BCM18");
             gpio18.setDirection(Gpio.DIRECTION_OUT_INITIALLY_HIGH);
+            Log.i(TAG, "First time BCM18=" + gpio18.getValue());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -101,7 +102,7 @@ public class MyGpio {
             gpio23 = manager.openGpio("BCM23");
             // Initialize the pin as an input
             gpio23.setDirection(Gpio.DIRECTION_IN);
-            Log.i(TAG, "BCM23=" + gpio23.getValue());
+            Log.i(TAG, "First time BCM23=" + gpio23.getValue());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -119,11 +120,11 @@ public class MyGpio {
     private void initGpio24() {
         try {
             gpio24.setDirection(Gpio.DIRECTION_IN);
-            gpio24.setActiveType(Gpio.ACTIVE_HIGH);
-            gpio24.setEdgeTriggerType(Gpio.EDGE_RISING);
+            //gpio24.setActiveType(Gpio.ACTIVE_HIGH);
+            //gpio24.setEdgeTriggerType(Gpio.EDGE_RISING);
             //Attache du callback
             gpio24.registerGpioCallback(mGpio24Callback);
-            Log.i(TAG, "BCM24=" + gpio24.getValue());
+            Log.i(TAG, "First time BCM24=" + gpio24.getValue());
         } catch (IOException e) {
             e.printStackTrace();
         }
